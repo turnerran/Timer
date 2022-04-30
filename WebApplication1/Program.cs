@@ -1,20 +1,25 @@
 using WebApplication1.Services;
 using WebApi.Helpers;
 using WebApi.Services;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddHostedService<TimedHostedService>();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddScoped<ISchedueledTaskService, SchedueledTaskService>();
 builder.Services.AddScoped<ITaskActionService, TaskActionService>();
 builder.Services.AddScoped<IOnInitService, OnInitService>();
+builder.Services.AddScoped<ITimedHostedService, TimedHostedService>();
+builder.Services.AddSingleton<ICacheService, CacheService>();
 
 // Add db context and pass in connection string
-builder.Services.AddDbContext<DataContext>();
+builder.Services.AddDbContext<DataContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+});
 
 builder.Services.AddHttpClient();
 

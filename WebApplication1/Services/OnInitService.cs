@@ -1,8 +1,4 @@
-﻿
-using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using WebApi.Helpers;
-using WebApplication1;
+﻿using WebApplication1;
 
 namespace WebApi.Services
 {
@@ -14,17 +10,14 @@ namespace WebApi.Services
     public class OnInitService : IOnInitService
     {
         private ILogger<OnInitService> _logger;
-        private readonly IHttpClientFactory _httpClientFactory;
         private ISchedueledTaskService _schedueledTaskService;
         private ITaskActionService _taskActionService;
         public OnInitService(
             ILogger<OnInitService> logger,
-            IHttpClientFactory httpClientFactory,
             ISchedueledTaskService schedueledTaskService,
             ITaskActionService taskActionService
            )
         {
-            _httpClientFactory = httpClientFactory;
             _logger = logger;
             _schedueledTaskService = schedueledTaskService;
             _taskActionService = taskActionService;
@@ -34,6 +27,11 @@ namespace WebApi.Services
         {
             var completedTasks = new List<SchedueledTask>();
             var tasks = await _schedueledTaskService.GetTaskOverDue();
+            if (tasks == null || !tasks.Any())
+            {
+                return;
+            }
+
             foreach (var task in tasks)
             {
                 try

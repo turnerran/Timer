@@ -1,5 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Services;
+using WebApplication1.Models.Requests;
+using WebApplication1.Models.Responses;
+using WebApplication1.Services;
 
 namespace WebApplication1.Controllers
 {
@@ -8,29 +11,33 @@ namespace WebApplication1.Controllers
     public class TimersController : ControllerBase
     {
         private ISchedueledTaskService _schedueledTaskService;
-        private static List<SchedueledTask> SchedueledTasks { get; set; } = new List<SchedueledTask>();
+        private ITimedHostedService _timedHostedService;
+        private ICacheService _cacheService;
 
-        private readonly ILogger<TimersController> _logger;
-
-        public TimersController(ISchedueledTaskService schedueledTaskService, ILogger<TimersController> logger)
+        public TimersController(ISchedueledTaskService schedueledTaskService, 
+                                ITimedHostedService timedHostedService, ICacheService cacheService)
         {
-            _logger = logger;
             _schedueledTaskService = schedueledTaskService;
+            _timedHostedService = timedHostedService;
+            _cacheService = cacheService;
         }
 
         [HttpGet("{id}")]
-        public async Task<TimeLeft> Get(int id)
+        public async Task<TimeLeft> Get(long id)
         {
-            //var task = SchedueledTasks.FirstOrDefault(x => x.Id == id);
-            var task = await _schedueledTaskService.GetById(id);
+            var task = _cacheService.GetTaskById(id);
             if (task == null)
             {
-                throw new ArgumentException("No such id exists");
-            }
+                task = await _schedueledTaskService.GetTaskById(id);
+                if (task == null)
+                {
+                    throw new ArgumentException("No such id exists");
+                }
 
-            if (task.IsCompleted)
-            {
-                throw new ArgumentException("Task is already completed");
+                if (task.IsCompleted)
+                {
+                    throw new ArgumentException("Task is already completed");
+                }
             }
 
             var now = DateTime.UtcNow;
@@ -39,9 +46,19 @@ namespace WebApplication1.Controllers
             return new TimeLeft { Id = id, TImeLeft = timeLeft };
         }
 
-        [HttpPost(Name = "PostWeatherForecast")]
-        public async Task<SchedueledTask> Post(UrlTask urlTask)
+        [HttpPost]
+        public async Task<TaskCreated> Post(UrlTask urlTask)
         {
+            if (urlTask.Hours < 0 || urlTask.Minutes < 0 || urlTask.Seconds < 0)
+            {
+                throw new ArgumentException("Please provide valid and larger then 0 values");
+            }
+
+            if (!Uri.IsWellFormedUriString(urlTask.Url, UriKind.Absolute))
+            {
+                throw new ArgumentException("Please provide a valid URL");
+            }
+
             var fireEventTime = DateTime.UtcNow;
             fireEventTime = fireEventTime.AddHours(urlTask.Hours);
             fireEventTime = fireEventTime.AddMinutes(urlTask.Minutes);
@@ -50,9 +67,10 @@ namespace WebApplication1.Controllers
             var task = new SchedueledTask { Url = urlTask.Url, FireEventTime = fireEventTime };
 
             task = await _schedueledTaskService.Create(task);
-            SchedueledTasks.Add(task);
+            await _timedHostedService.SetTimer(task);
+            _cacheService.Add(task);
 
-            return task;
+            return new TaskCreated { Id = task.Id };
         }
     }
 }

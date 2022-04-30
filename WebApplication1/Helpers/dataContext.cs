@@ -5,17 +5,12 @@ namespace WebApi.Helpers
 {
     public class DataContext : DbContext
     {
-        protected readonly IConfiguration Configuration;
-
-        public DataContext(IConfiguration configuration)
+        public DataContext(DbContextOptions options) : base(options)
         {
-            Configuration = configuration;
         }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder options)
+        protected DataContext()
         {
-            // connect to sql server with connection string from app settings
-            options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
         }
 
         public DbSet<SchedueledTask> SchedueledTasks { get; set; }

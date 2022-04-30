@@ -4,32 +4,54 @@ namespace WebApi.Services
 {
     public interface ITaskActionService
     {
-        Task<SchedueledTask> DoAction(SchedueledTask schedueledTask);
+        Task<bool> DoAction(SchedueledTask schedueledTask);
     }
 
     public class TaskActionService : ITaskActionService
     {
-        private ISchedueledTaskService _schedueledTaskService;
-        private readonly IHttpClientFactory _httpClientFactory;
+        readonly IHttpClientFactory _httpClientFactory;
+        private readonly ILogger<ITaskActionService> _logger;
 
         public TaskActionService(
-            ISchedueledTaskService schedueledTaskService,
-            IHttpClientFactory httpClientFactory
+            IHttpClientFactory httpClientFactory, ILogger<TaskActionService> logger
         )
         {
-            _schedueledTaskService = schedueledTaskService;
             _httpClientFactory = httpClientFactory;
+            _logger = logger;
         }
 
-        public async Task<SchedueledTask> DoAction(SchedueledTask schedueledTask)
+        public async Task<bool> DoAction(SchedueledTask schedueledTask)
         {
-            var httpClient = _httpClientFactory.CreateClient();
-            var url = schedueledTask.Url + $"/{schedueledTask.Id}";
-       
-            await httpClient.PostAsync(url, null);
-            await _schedueledTaskService.MarkTaskAsCompleted(schedueledTask.Id);
+            try
+            {
+                var id = schedueledTask.Id;
+                if (id <= 0)
+                {
+                    throw new Exception("Task id is not valid");
+                }
 
-            return schedueledTask;
+                var url = schedueledTask.Url;
+                if (!Uri.IsWellFormedUriString(url, UriKind.Absolute))
+                {
+                    throw new ArgumentException("URL is not valid");
+                }
+
+                url += $"/{id}";
+                using (var httpClient = _httpClientFactory.CreateClient("action"))
+                {
+                    var res = await httpClient.PostAsync(url, null);
+                    res.EnsureSuccessStatusCode();
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"failed sending task #{schedueledTask.Id}", ex);
+                return false;
+            }
         }
+
+ 
     }
 }

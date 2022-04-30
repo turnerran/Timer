@@ -1,46 +1,45 @@
-﻿namespace WebApplication1.Services
+﻿using WebApi.Services;
+
+namespace WebApplication1.Services
 {
-    public class TimedHostedService : IHostedService, IDisposable
+    public interface ITimedHostedService
     {
-        private int executionCount = 0;
-        private readonly ILogger<TimedHostedService> _logger;
-        private Timer _timer = null!;
-
-        public TimedHostedService(ILogger<TimedHostedService> logger)
+        Task SetTimer(SchedueledTask task);
+    }
+    public class TimedHostedService : ITimedHostedService
+    {
+        private ITaskActionService _taskActionService;
+        private IServiceScopeFactory _serviceScopeFactory;
+        private ICacheService _cacheService;
+        public TimedHostedService(ITaskActionService taskActionService,
+                                    IServiceScopeFactory scopeFactory, 
+                                    ICacheService cacheService)
         {
-            _logger = logger;
+            _taskActionService = taskActionService;
+            _serviceScopeFactory = scopeFactory;
+            _cacheService = cacheService;
         }
 
-        public Task StartAsync(CancellationToken stoppingToken)
+        public Task SetTimer(SchedueledTask task)
         {
-            _logger.LogInformation("Timed Hosted Service running.");
-
-            _timer = new Timer(DoWork, null, TimeSpan.Zero,
-                TimeSpan.FromSeconds(1));
+            var aTimer = new System.Timers.Timer();
+            aTimer.Elapsed += async delegate { await OnTimedEvent(task); };
+            aTimer.Interval = (int)(task.FireEventTime - DateTime.UtcNow).TotalMilliseconds;
+            aTimer.Enabled = true;
+            aTimer.AutoReset = false;
 
             return Task.CompletedTask;
         }
-
-        private void DoWork(object? state)
+        private async Task OnTimedEvent(SchedueledTask task)
         {
-            var count = Interlocked.Increment(ref executionCount);
+            await _taskActionService.DoAction(task);
+            using (var scope = _serviceScopeFactory.CreateScope())
+            {
+                var scopedService = scope.ServiceProvider.GetRequiredService<ISchedueledTaskService>();
+                await scopedService.MarkTaskAsCompleted(task.Id);
+            }
+            _cacheService.Remove(task.Id);
 
-            _logger.LogInformation(
-                "Timed Hosted Service is working. Count: {Count}", count);
-        }
-
-        public Task StopAsync(CancellationToken stoppingToken)
-        {
-            _logger.LogInformation("Timed Hosted Service is stopping.");
-
-            _timer?.Change(Timeout.Infinite, 0);
-
-            return Task.CompletedTask;
-        }
-
-        public void Dispose()
-        {
-            _timer?.Dispose();
         }
     }
 }
