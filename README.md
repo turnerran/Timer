@@ -13,4 +13,5 @@ In order to run this project, please follow the following instructions:
                                                 "seconds": 1,
                                                 "url": "www.some-server.com"
                                                }
+                                               
 5) Run tests -via command line using the dontnet cli ```dotnet test .\Tests\```
