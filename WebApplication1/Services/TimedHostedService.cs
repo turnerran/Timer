@@ -1,4 +1,5 @@
 ﻿using WebApi.Services;
+using WebApplication1.Models.Domains;
 
 namespace WebApplication1.Services
 {

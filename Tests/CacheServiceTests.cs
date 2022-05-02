@@ -1,11 +1,6 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using Moq;
 using System;
-using System.Threading.Tasks;
-using WebApi.Helpers;
 using WebApi.Services;
-using WebApplication1;
+using WebApplication1.Models.Domains;
 using Xunit;
 
 namespace Tests

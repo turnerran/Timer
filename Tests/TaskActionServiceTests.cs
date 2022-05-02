@@ -4,6 +4,7 @@ using System;
 using System.Threading.Tasks;
 using WebApi.Services;
 using WebApplication1;
+using WebApplication1.Models.Domains;
 using Xunit;
 
 namespace Tests

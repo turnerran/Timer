@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Services;
+using WebApplication1.Models.Domains;
 using WebApplication1.Models.Requests;
 using WebApplication1.Models.Responses;
+using WebApplication1.Responses;
 using WebApplication1.Services;
 
 namespace WebApplication1.Controllers

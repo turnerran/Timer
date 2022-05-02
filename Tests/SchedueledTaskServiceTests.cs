@@ -4,10 +4,10 @@ using Moq;
 using System;
 using System.Threading.Tasks;
 using WebApi.Helpers;
-using WebApi.Services;
-using WebApplication1;
 using Xunit;
 using System.Linq;
+using WebApplication1.Models.Domains;
+using WebApi.Services;
 
 namespace Tests
 {

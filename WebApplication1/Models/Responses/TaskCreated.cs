@@ -1,8 +1,7 @@
-namespace WebApplication1
+namespace WebApplication1.Responses;
+
+public class TimeLeft
 {
-    public class TimeLeft
-    {
-        public long Id { get; set; }
-        public int TImeLeft { get; set; }
-    }
+    public long Id { get; set; }
+    public int TImeLeft { get; set; }
 }
