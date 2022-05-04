@@ -14,13 +14,14 @@ namespace Tests
         [Fact]
         public async void IsDoActionWithNegativeNumberReturnFalse()
         {
+            var dateTimeMock = new Mock<IDateTimeService>();
             var loggerMock = new Mock<ILogger<TaskActionService>>();
             var taskActionService = new TaskActionService(_httpClientFactory.Object,
                                                               loggerMock.Object);
 
             var task = new SchedueledTask
             {
-                FireEventTime = DateTime.UtcNow.AddMinutes(1),
+                FireEventTime = dateTimeMock.Object.ConvertInputToSchedueledTime(0, 1, 0),
                 Id = 0,
                 IsCompleted = false,
                 Url = "www.one.co.il"
@@ -34,13 +35,14 @@ namespace Tests
         [Fact]
         public async void IsDoActionWithInValidUrlReturnFalse()
         {
+            var dateTimeMock = new Mock<IDateTimeService>();
             var loggerMock = new Mock<ILogger<TaskActionService>>();
             var taskActionService = new TaskActionService(_httpClientFactory.Object,
                                                           loggerMock.Object);
 
             var task = new SchedueledTask
             {
-                FireEventTime = DateTime.UtcNow.AddMinutes(1),
+                FireEventTime = dateTimeMock.Object.ConvertInputToSchedueledTime(0, 1, 0),
                 Id = 1,
                 IsCompleted = false,
                 Url = "invalid-url"
@@ -54,13 +56,14 @@ namespace Tests
         [Fact]
         public async void IsDoActionWithEmptyUrlReturnFalse()
         {
+            var dateTimeMock = new Mock<IDateTimeService>();
             var loggerMock = new Mock<ILogger<TaskActionService>>();
             var taskActionService = new TaskActionService(_httpClientFactory.Object,
                                                           loggerMock.Object);
 
             var task = new SchedueledTask
             {
-                FireEventTime = DateTime.UtcNow.AddMinutes(1),
+                FireEventTime = dateTimeMock.Object.ConvertInputToSchedueledTime(0, 1, 0),
                 Id = 1,
                 IsCompleted = false,
                 Url = ""
@@ -74,6 +77,7 @@ namespace Tests
         [Fact]
         public async Task IsDoActionWithValidUrlReturnTrue()
         {
+            var dateTimeMock = new Mock<IDateTimeService>();
             var loggerMock = new Mock<ILogger<TaskActionService>>();
             var httpClientFactory = _httpClientFactory;
 
@@ -82,7 +86,7 @@ namespace Tests
 
             var task = new SchedueledTask
             {
-                FireEventTime = DateTime.UtcNow.AddMinutes(1),
+                FireEventTime = dateTimeMock.Object.ConvertInputToSchedueledTime(0, 1, 0),
                 Id = 41655789,
                 IsCompleted = false,
                 Url = "https://gorest.co.in/public/v2/users"

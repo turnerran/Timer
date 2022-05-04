@@ -13,6 +13,7 @@ builder.Services.AddScoped<ISchedueledTaskService, SchedueledTaskService>();
 builder.Services.AddScoped<ITaskActionService, TaskActionService>();
 builder.Services.AddScoped<IOnInitService, OnInitService>();
 builder.Services.AddScoped<ITimedHostedService, TimedHostedService>();
+builder.Services.AddScoped<IDateTimeService, DateTimeService>();
 builder.Services.AddSingleton<ICacheService, CacheService>();
 
 // Add db context and pass in connection string

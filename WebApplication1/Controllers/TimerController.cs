@@ -15,13 +15,15 @@ namespace WebApplication1.Controllers
         private ISchedueledTaskService _schedueledTaskService;
         private ITimedHostedService _timedHostedService;
         private ICacheService _cacheService;
+        private IDateTimeService _dateTimeService;
 
-        public TimersController(ISchedueledTaskService schedueledTaskService, 
+        public TimersController(ISchedueledTaskService schedueledTaskService, IDateTimeService dateTimeService,
                                 ITimedHostedService timedHostedService, ICacheService cacheService)
         {
             _schedueledTaskService = schedueledTaskService;
             _timedHostedService = timedHostedService;
             _cacheService = cacheService;
+            _dateTimeService = dateTimeService;
         }
 
         [HttpGet("{id}")]
@@ -61,11 +63,7 @@ namespace WebApplication1.Controllers
                 throw new ArgumentException("Please provide a valid URL");
             }
 
-            var fireEventTime = DateTime.UtcNow;
-            fireEventTime = fireEventTime.AddHours(urlTask.Hours);
-            fireEventTime = fireEventTime.AddMinutes(urlTask.Minutes);
-            fireEventTime = fireEventTime.AddSeconds(urlTask.Seconds);
-
+            var fireEventTime = _dateTimeService.ConvertInputToSchedueledTime(urlTask.Hours, urlTask.Minutes, urlTask.Seconds);
             var task = new SchedueledTask { Url = urlTask.Url, FireEventTime = fireEventTime };
 
             task = await _schedueledTaskService.Create(task);

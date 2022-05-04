@@ -1,5 +1,4 @@
-﻿using WebApplication1;
-using WebApplication1.Models.Domains;
+﻿using WebApplication1.Models.Domains;
 
 namespace WebApi.Services
 {
@@ -37,8 +36,11 @@ namespace WebApi.Services
             {
                 try
                 {
-                    await _taskActionService.DoAction(task);
-                    completedTasks.Add(task);
+                    var isCompleted = await _taskActionService.DoAction(task);
+                    if (isCompleted)
+                    {
+                        completedTasks.Add(task);
+                    }
                 }
                 catch(Exception ex)
                 {

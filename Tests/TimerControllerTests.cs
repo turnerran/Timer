@@ -24,11 +24,13 @@ namespace Tests
         public async void IsCallingGetWithIdZeroThrowsError()
         {
             var _schedueledTaskService = new Mock<ISchedueledTaskService>();
+            var _dateTimeService = new Mock<IDateTimeService>();
             var _timedHostedService = new Mock<ITimedHostedService>();
             var _cacheService = new Mock<ICacheService>();
             var timersController = new TimersController(_schedueledTaskService.Object,
-                                                         _timedHostedService.Object,
-                                                         _cacheService.Object);
+                                                        _dateTimeService.Object,
+                                                        _timedHostedService.Object,
+                                                        _cacheService.Object);
 
             var id = 0;
 
@@ -40,10 +42,12 @@ namespace Tests
         {
             var _schedueledTaskService = new Mock<ISchedueledTaskService>();
             var _timedHostedService = new Mock<ITimedHostedService>();
+            var _dateTimeService = new Mock<IDateTimeService>();
             var _cacheService = new Mock<ICacheService>();
             var timersController = new TimersController(_schedueledTaskService.Object,
-                                                         _timedHostedService.Object,
-                                                         _cacheService.Object);
+                                                        _dateTimeService.Object,
+                                                        _timedHostedService.Object,
+                                                        _cacheService.Object);
 
             var urlTask = new UrlTask
             {
@@ -62,9 +66,11 @@ namespace Tests
             var _schedueledTaskService = new Mock<ISchedueledTaskService>();
             var _timedHostedService = new Mock<ITimedHostedService>();
             var _cacheService = new Mock<ICacheService>();
+            var _dateTimeService = new Mock<IDateTimeService>();
             var timersController = new TimersController(_schedueledTaskService.Object,
-                                                         _timedHostedService.Object,
-                                                         _cacheService.Object);
+                                                        _dateTimeService.Object,
+                                                        _timedHostedService.Object,
+                                                        _cacheService.Object);
 
             var urlTask = new UrlTask
             {
@@ -83,9 +89,11 @@ namespace Tests
             var _schedueledTaskService = new Mock<ISchedueledTaskService>();
             var _timedHostedService = new Mock<ITimedHostedService>();
             var _cacheService = new Mock<ICacheService>();
+            var _dateTimeService = new Mock<IDateTimeService>();
             var timersController = new TimersController(_schedueledTaskService.Object,
-                                                         _timedHostedService.Object
-                                                         , _cacheService.Object);
+                                                        _dateTimeService.Object,
+                                                        _timedHostedService.Object,
+                                                        _cacheService.Object);
 
             var urlTask = new UrlTask
             {

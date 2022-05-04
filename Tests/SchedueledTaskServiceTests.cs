@@ -66,11 +66,11 @@ namespace Tests
         public async void IsCreatingValidNewTaskSucceeds()
         {
             var loggerMock = new Mock<ILogger<SchedueledTaskService>>();
-
+            var dateTimeMock = new Mock<IDateTimeService>();
             var service = new SchedueledTaskService(loggerMock.Object, _databaseContext);
             var task = new SchedueledTask
             {
-                FireEventTime = DateTime.UtcNow.AddMinutes(1),
+                FireEventTime = dateTimeMock.Object.ConvertInputToSchedueledTime(0, 1, 0),
                 IsCompleted = false,
                 Url = $"www.blabla.co.il",
             };
@@ -95,12 +95,12 @@ namespace Tests
         public async void IsCreatingTaskWithExistingIdThrowsError()
         {
             var loggerMock = new Mock<ILogger<SchedueledTaskService>>();
-
+            var dateTimeMock = new Mock<IDateTimeService>();
             var service = new SchedueledTaskService(loggerMock.Object, _databaseContext);
 
             var task = new SchedueledTask
             {
-                FireEventTime = DateTime.UtcNow,
+                FireEventTime = dateTimeMock.Object.ConvertInputToSchedueledTime(0, 0, 0),
                 Id = 1,
                 IsCompleted = false,
                 Url = "www.blabla.co.il",
@@ -111,6 +111,7 @@ namespace Tests
 
         private async Task SetDatabaseContext()
         {
+            var dateTimeMock = new Mock<IDateTimeService>();
             var options = new DbContextOptionsBuilder<DataContext>()
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
                 .Options;
@@ -122,7 +123,7 @@ namespace Tests
                 {
                     databaseContext.SchedueledTasks.Add(new SchedueledTask
                     {
-                        FireEventTime = DateTime.UtcNow,
+                        FireEventTime = dateTimeMock.Object.ConvertInputToSchedueledTime(0, 0, 0),
                         Id = i,
                         IsCompleted = i <= 7,
                         Url = $"www.{i}.co.il",

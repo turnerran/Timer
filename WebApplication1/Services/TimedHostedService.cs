@@ -33,12 +33,16 @@ namespace WebApplication1.Services
         }
         private async Task OnTimedEvent(SchedueledTask task)
         {
-            await _taskActionService.DoAction(task);
-            using (var scope = _serviceScopeFactory.CreateScope())
+            var isCompleted = await _taskActionService.DoAction(task);
+            if (isCompleted)
             {
-                var scopedService = scope.ServiceProvider.GetRequiredService<ISchedueledTaskService>();
-                await scopedService.MarkTaskAsCompleted(task.Id);
+                using (var scope = _serviceScopeFactory.CreateScope())
+                {
+                    var scopedService = scope.ServiceProvider.GetRequiredService<ISchedueledTaskService>();
+                    await scopedService.MarkTaskAsCompleted(task.Id);
+                }
             }
+
             _cacheService.Remove(task.Id);
 
         }

@@ -1,3 +1,4 @@
+using Moq;
 using System;
 using WebApi.Services;
 using WebApplication1.Models.Domains;
@@ -14,7 +15,7 @@ namespace Tests
         [Fact]
         public async void IsFetchingTaskFromCacheReturnTrue()
         {
-
+            var _dateTimeService = new Mock<IDateTimeService>();
             var cacheService = new CacheService();
             var url = "http://www.blabla.com";
             var id = 1;
@@ -22,7 +23,7 @@ namespace Tests
             {
                 Id = id,
                 IsCompleted = false,
-                FireEventTime = DateTime.UtcNow,
+                FireEventTime = _dateTimeService.Object.ConvertInputToSchedueledTime(0, 0, 0),
                 Url = url
             };
             cacheService.Add(task);
