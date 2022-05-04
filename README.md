@@ -1,9 +1,9 @@
 In order to run this project, please follow the following instructions:
 
 1) Clone the repo locally.
-2) Mke sure you have .NET core 6.0 installed. in case not, follow the instructions here: https://docs.microsoft.com/en-us/dotnet/core/install/macos
+2) Mke sure you have .NET core 6.0 installed and dotnet cli. in case not, follow the instructions here: https://docs.microsoft.com/en-us/dotnet/core/install/macos
 3) Open it via visual studio and hit the play button or run ```dotnet run --project .\WebApplication1\``` from the root of the project.
-4) Open postman (or any other tool you're using) and try to use the post and get methods,
+4) If you use visual studio - the Swagger ui page will be open so you can use it out of the box. In case you use the other option from the previous line, open postman (or any other tool you're using) and try to use the post and get methods
  
  Example - using Get ```http://localhost:5164/Timers/2```
  
