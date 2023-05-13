@@ -1,3 +1,5 @@
+This is a scheduled tasks project written in .Net core
+
 In order to run this project, please follow the following instructions:
 
 1) Clone the repo locally.
